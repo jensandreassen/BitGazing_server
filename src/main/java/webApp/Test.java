@@ -21,7 +21,7 @@ public class Test {
 			
 				response = httpClient.execute(getRequest);
 			
-
+				
 			if (response.getStatusLine().getStatusCode() != 200) {
 				System.out.println("inte 200");
 			}
@@ -30,10 +30,8 @@ public class Test {
 			
 			
 		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 			
