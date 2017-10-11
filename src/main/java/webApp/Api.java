@@ -5,6 +5,11 @@ import static spark.Spark.get;
 import com.google.gson.Gson;
 	
 public class Api {
+	private Controller cont;
+	
+	public Api(Controller cont) {
+		this.cont = cont;
+	}
 	
 	public static void run() {
 		port(5000);
