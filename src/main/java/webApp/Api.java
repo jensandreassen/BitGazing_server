@@ -16,7 +16,7 @@ public class Api {
 		Gson gson = new Gson();
 		
 		
-		// ska ge ut valutaväxling
+		// ska ge ut valutavï¿½xling
 		get("/currency", "application/json", (request, response) -> {
 			response.type("application/json; charset=UTF-8");
 			response.status(200);	
@@ -33,15 +33,13 @@ public class Api {
 			response.type("application/json; charset=UTF-8");
 			response.status(200);
 			
-			return "teststräng";
+			return "teststrï¿½ng";
 			
 //			return new GsonBuilder()
 //					.setDateFormat("yyyy-MM-dd HH:mm:ss")
 //					.create()
 //					.toJson(unicorns);
 		});
-		
-		
 	}
 	
 	public static void main(String[] args) {
