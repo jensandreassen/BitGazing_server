@@ -5,16 +5,9 @@ import static spark.Spark.get;
 import com.google.gson.Gson;
 	
 public class Api {
-	private int port;
-	
-	public Api(int port) {
-		this.port = port;
-	}
 	
 	public static void run() {
 		port(5000);
-		Gson gson = new Gson();
-		
 		
 		// ska ge ut valutav�xling
 		get("/currency", "application/json", (request, response) -> {
@@ -34,7 +27,6 @@ public class Api {
 			response.status(200);
 			
 			return "teststr�ng";
-			
 //			return new GsonBuilder()
 //					.setDateFormat("yyyy-MM-dd HH:mm:ss")
 //					.create()
