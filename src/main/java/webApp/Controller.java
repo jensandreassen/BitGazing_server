@@ -1,10 +1,10 @@
 package webApp;
 
 public class Controller {
-	private Processer process;
+	private ProcesserStats process;
 	private Api api;
 	
-	public Controller(Processer process, Api api) {
+	public Controller(ProcesserStats process, Api api) {
 		this.process = process;
 		this.api = api;
 		
@@ -17,7 +17,7 @@ public class Controller {
 	
 	
 	public static void main(String[] args) {
-		Processer process = new Processer();
+		ProcesserStats process = new ProcesserStats();
 		Api api = new Api();
 		Controller cont = new Controller(process, api);
 		
