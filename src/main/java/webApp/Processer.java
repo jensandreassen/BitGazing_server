@@ -15,7 +15,7 @@ public class Processer {
 	public Processer(){
 		try {
 			this.marketJson = fr.readFile("files/MarketData.txt");
-			this.currencyJson = fr.readFile("files/CurrencyRates.json");
+			this.currencyJson = fr.readFile("files/currencyRates.json");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
