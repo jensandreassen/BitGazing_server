@@ -15,7 +15,7 @@ public class Processer {
 	public Processer(){
 		try {
 			this.marketJson = fr.readFile("files/MarketData.txt");
-			this.currencyJson = fr.readFile("files/CurrencyData.txt");
+			this.currencyJson = fr.readFile("files/CurrencyRates.json");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -43,12 +43,12 @@ public class Processer {
 	//Only for testing!
 	public static void main(String[] args) {
 		Processer p = new Processer();
-		Market[] d = p.getMarketGsonBean();
-		for(Market da : d) {
-			System.out.println(da.symbol);
-			System.out.println(da.currency);
-			System.out.println(da.latest_trade + "\n" );
-		}
+//		Market[] d = p.getMarketGsonBean();
+//		for(Market da : d) {
+//			System.out.println(da.symbol);
+//			System.out.println(da.currency);
+//			System.out.println(da.latest_trade + "\n" );
+//		}
 		HashMap m = getCurrencyHashMap();
 		System.out.println(m.get("SEK"));
 	}
