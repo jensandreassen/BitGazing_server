@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.google.gson.Gson;
@@ -73,35 +74,69 @@ public class ProcesserStats {
 		return jo;
 	}
 	
+	/**
+	 * Marchaling the data and produce the final output
+	 * @return JSONArray
+	 */
+	public JSONArray finalData() {
+		String exchangeCurrency = this.currentCurrency;
+		Market[] data = this.getMarketGsonBeans();
+		JSONArray ja = new JSONArray();
+		for(Market mrkt : data) {
+			JSONObject js = new JSONObject();
+			if(mrkt.volume>0) {
+				double finalCurrency = mrkt.latest_trade / Double.parseDouble(exchangeCurrency);
+				js.put("market", mrkt.symbol);
+				js.put("last_price", finalCurrency);
+				ja.put(js);
+			}
+		}		
+		return ja;
+	}
 	
+  /**
+   *Formats JsonObject to its final form.
+   *
+   *
+   */
+	public JSONObject finalData2() {
+		JSONObject jo = new JSONObject();
+		jo.put("markets", this.finalData().toString());
+		jo.put("Base", "SEK");
+		return jo;
+	}
 
 	// Only for testing!
 	public static void main(String[] args) {
 		ProcesserStats p = new ProcesserStats();
-		Market[] d = p.getMarketGsonBeans();
-		for (Market da : d) {
-			System.out.println(da.symbol);
-			System.out.println(da.currency);
-			System.out.println(da.latest_trade + "\n");
-		}
-		JSONObject m = p.getCurrencyJsonObject();
-		for (Object key : m.keySet()) {
-			String keyStr = (String) key;
-			Object keyvalue = m.get(keyStr);
-
-			// Print key and value
-			System.out.println("" + keyStr + ": " + keyvalue);
-		}
-
-		System.out.println("\n==============================================\n");
-
-		String ratesStr = m.optString("rates");
-		JSONObject currencies = p.stringToJsonObject(ratesStr);
-
-		for (Object key : currencies.keySet()) {
-			String keyStr = (String) key;
-			Object keyvalue = currencies.get(keyStr);
-			System.out.println("" + keyStr + ": " + keyvalue);
-		}
+//		Market[] d = p.getMarketGsonBeans();
+//		for (Market da : d) {
+//			System.out.println(da.symbol);
+//			System.out.println(da.currency);
+//			System.out.println(da.latest_trade + "\n");
+//		}
+//		JSONObject m = p.getCurrencyJsonObject();
+//		for (Object key : m.keySet()) {
+//			String keyStr = (String) key;
+//			Object keyvalue = m.get(keyStr);
+//
+//			// Print key and value
+//			System.out.println("" + keyStr + ": " + keyvalue);
+//		}
+//
+//		System.out.println("\n==============================================\n");
+//
+//		String ratesStr = m.optString("rates");
+//		JSONObject currencies = p.stringToJsonObject(ratesStr);
+//
+//		for (Object key : currencies.keySet()) {
+//			String keyStr = (String) key;
+//			Object keyvalue = currencies.get(keyStr);
+//			System.out.println("" + keyStr + ": " + keyvalue);
+//		}
+		
+//		JSONArray ja = p.finalData();
+		JSONObject jo = p.finalData2();
+		System.out.println(jo.toString());
 	}
 }
