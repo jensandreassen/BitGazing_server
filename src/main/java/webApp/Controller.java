@@ -6,7 +6,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 public class Controller {
-	private Processer process;
+
+	private ProcesserStats process;
 	private JsonObject market;
 	private JsonObject currency;
 	private Calendar cal;
@@ -16,7 +17,7 @@ public class Controller {
 	final long currencyIntervall = 18^6; // Ersätt med antal timmar till uppdatering
 	private String errorCode = "INSERT ERROR CODE";
 	
-	public Controller(Processer process) {
+	public Controller(ProcesserStats process) {
 		this.process = process;
 	}
 	
@@ -57,7 +58,7 @@ public class Controller {
 	}
 	
 	public static void main(String[] args) {
-		Processer process = new Processer();
+		ProcesserStats process = new ProcesserStats();
 		Controller cont = new Controller(process);
 		Api api = new Api(cont);
 	}
