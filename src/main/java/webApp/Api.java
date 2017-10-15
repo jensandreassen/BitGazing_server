@@ -9,39 +9,28 @@ public class Api {
 	
 	public Api(Controller cont) {
 		this.cont = cont;
-	}
-	
-	public static void run() {
-		port(5000);
-		
-		// ska ge ut valutav�xling
-		get("/currency", "application/json", (request, response) -> {
-			response.type("application/json; charset=UTF-8");
-			response.status(200);	
-			
-			return "test";
-//			return new GsonBuilder()
-//					.setDateFormat("yyyy-MM-dd HH:mm:ss")
-//					.create()
-//					.toJson();
-		});
-		
-		// ska ge ut information
-		get("/getinfo", "application/json", (request, response) -> {
-			response.type("application/json; charset=UTF-8");
-			response.status(200);
-			
-			return "teststr�ng";
-//			return new GsonBuilder()
-//					.setDateFormat("yyyy-MM-dd HH:mm:ss")
-//					.create()
-//					.toJson(unicorns);
-		});
-	}
-	
-	public static void main(String[] args) {
 		run();
 	}
 	
-	
+	public void run() {
+		port(5000);
+		
+		get("/currency/:currency", "application/json", (request, response) -> {
+			response.type("application/json; charset=UTF-8");
+			response.status(200);	
+			String param = request.params(":currency");
+
+			//			return cont.getCurrency(param);
+			return param;
+		});
+		
+		
+		get("/getinfo", "application/json", (request, response) -> {
+			response.type("application/json; charset=UTF-8");
+			response.status(200);
+			System.out.println("Förfrågan kom");
+//			return cont.getMarket();
+			return "Test";
+		});
+	}	
 }
