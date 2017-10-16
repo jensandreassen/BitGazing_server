@@ -88,9 +88,9 @@ public class ProcesserStats {
     JSONArray ja = new JSONArray();
     for(Market mrkt : data) {
       JSONObject js = new JSONObject();
-      if(mrkt.volume>0 && mrkt.currency.equals("USD")) { //Selects all markets whit volume bigger than 0 and whit base currency USD. 
+      if(mrkt.volume>0) {
         double finalCurrency = btcCurrencyConverter(mrkt.close, mrkt.currency, currency); 
-        js.put("market", mrkt.symbol.substring(0, mrkt.symbol.length()-3));
+        js.put("market", mrkt.symbol);
         js.put("last_price", finalCurrency);
         ja.put(js);
       }
