@@ -2,7 +2,6 @@ package webApp;
 
 import java.util.Calendar;
 import java.util.HashMap;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -14,8 +13,8 @@ public class Controller {
 	private Calendar cal;
 	private long marketTime;
 	private long currencyTime;
-	final long marketIntervall = 18^6;
-	final long currencyIntervall = 18^6;
+	final long marketIntervall = 18^6; // Ersätt med antal timmar till uppdatering
+	final long currencyIntervall = 18^6; // Ersätt med antal timmar till uppdatering
 	private String errorCode = "INSERT ERROR CODE";
 	
 	public Controller(ProcesserStats process) {
@@ -33,12 +32,14 @@ public class Controller {
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
-			return errorCode;
+			if(market==null) {
+				return errorCode;
+			}
 		}
 		return market.toString();
 	}
 	
-	public String getCurrency() {
+	public String getCurrency(String param) {
 		try {
 			if(currency==null) {
 				//currency = process.get
@@ -49,7 +50,9 @@ public class Controller {
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
-			return errorCode;
+			if(currency==null) {
+				return errorCode;
+			}
 		}
 		return currency.toString();
 	}
