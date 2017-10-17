@@ -19,9 +19,8 @@ public class Api {
 			response.type("application/json; charset=UTF-8");
 			response.status(200);	
 			String param = request.params(":currency");
-
-			//			return cont.getCurrency(param);
-			return param;
+			System.out.println("Förfrågan kom");
+			return cont.getStats(param);
 		});
 		
 		
@@ -30,7 +29,7 @@ public class Api {
 			response.status(200);
 			System.out.println("Förfrågan kom");
 //			return cont.getMarket();
-			return cont.getStats();
+			return cont.getCurrency();
 		});
 	}	
 }

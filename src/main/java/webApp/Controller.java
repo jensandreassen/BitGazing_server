@@ -21,20 +21,20 @@ public class Controller {
 	private long currencyTime;
 	final long marketIntervall = 18^6; // Ersätt med antal timmar till uppdatering
 	final long currencyIntervall = 18^6; // Ersätt med antal timmar till uppdatering
-	private JSONObject errorCode = new JSONObject("Felkod");
+	private JSONObject errorCode = new JSONObject();
 	
 	public Controller(ProcesserStats procesStat, ProcessorMap processMap) {
 		this.procesStat = procesStat;
 		this.processMap = processMap;
 	}
 	
-	public JSONObject getStats() {
+	public JSONObject getStats(String param) {
 		try {
 			if(stats==null) {
-				stats = procesStat.getCurrencyJsonObject();
+				stats = procesStat.finalData2(param);
 				statsTime = cal.getTimeInMillis();
 			} else if(statsTime+marketIntervall<cal.getTimeInMillis()) {
-				stats = procesStat.getCurrencyJsonObject();
+				stats = procesStat.finalData2(param);
 				statsTime = cal.getTimeInMillis();
 			}
 		} catch (Exception e) {
@@ -46,7 +46,7 @@ public class Controller {
 		return stats;
 	}
 	
-	public JSONObject getCurrency(String param) {
+	public JSONObject getCurrency() {
 		try {
 			if(currency==null) {
 				//currency = process.get
