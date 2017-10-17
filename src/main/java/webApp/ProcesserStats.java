@@ -99,7 +99,8 @@ public class ProcesserStats {
   }
   
   /**
-   *Formats JsonObject to its final form with "base" parameter currency output and Json string containing all markets in a "markets" Json parameter. .
+   *Formats JsonObject to its final form with "base" parameter currency output and
+   *Json string containing all markets in a "markets" Json parameter. .
    *@param currency
    *       The currency of the output.
    *@return JSONObject
