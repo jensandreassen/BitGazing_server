@@ -47,7 +47,7 @@ public final class ProcessorMap {
 	 */
 	public static JSONObject getBTCVolumeByCurrency() throws Exception {
 		//Fetch data
-//		JSONArray allMarketsData = DataFetcher.fetchAllBTCMarkets();
+//		JSONArray markets = DataFetcher.fetchAllBTCMarkets();
 		JSONArray markets = new JSONArray(readDataFromFile("files/MarketData.txt"));
 		
 		//Read and extract relevant market data.
