@@ -30,7 +30,7 @@ public class Api {
 			response.status(200);
 			System.out.println("Förfrågan kom");
 //			return cont.getMarket();
-			return "Test";
+			return cont.getStats();
 		});
 	}	
 }
