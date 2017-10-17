@@ -20,10 +20,10 @@ public class ProcesserStats {
   private String marketJson;
   private String currencyJson;
 
-  private String currentCurrency = "0.000208886471";//Just nu hur mycket en dollar kostar i btc. 
-//  1 USD = 0.000208886471 BTC
-//  1 BTC = USD/BTC = 4787.28941
-
+  /**
+   * Construktor at the moment reads files containing market data and
+   * currency data Those files will later be delivered by dataFetcher. 
+   */
   public ProcesserStats() {
     try {
       this.marketJson = fr.readFile("files/MarketData.txt");
@@ -34,7 +34,7 @@ public class ProcesserStats {
   }
 
   /**
-   * Get all market data as Market array.
+   * Get all market data as a array.
    * 
    * @return Market[]
    */
@@ -58,7 +58,7 @@ public class ProcesserStats {
   /**
    * Creates a JSONobject out of currency data.
    * 
-   * @return
+   * @return JSONObject containing 
    */
   public JSONObject getCurrencyJsonObject() {
     JSONObject jo = new JSONObject(currencyJson);
@@ -67,8 +67,8 @@ public class ProcesserStats {
 
   /**
    * Creates a JSONObject out of json formatted String.
-   * 
    * @param jsonString
+   *
    * @return JSONObject
    */
   public JSONObject stringToJsonObject(String jsonString) {
@@ -77,17 +77,19 @@ public class ProcesserStats {
   }
   
   /**
-   * Marchaling the data and produce Json Array containing all markets
-   * final price in one currency.
+   * Marchaling bitcoin markets data and produce Json Array containing all markets
+   * last price in one currency.
+   * @param currency
+   *        The currency of the output.
    * @return JSONArray
    */
-  public JSONArray finalData(String cc) {
+  public JSONArray finalData(String currency) {
     Market[] data = this.getMarketGsonBeans();
     JSONArray ja = new JSONArray();
     for(Market mrkt : data) {
       JSONObject js = new JSONObject();
       if(mrkt.volume>0) {
-        double finalCurrency = btcCurrencyConverter(mrkt.close, mrkt.currency, cc); 
+        double finalCurrency = btcCurrencyConverter(mrkt.close, mrkt.currency, currency); 
         js.put("market", mrkt.symbol);
         js.put("last_price", finalCurrency);
         ja.put(js);
@@ -97,18 +99,28 @@ public class ProcesserStats {
   }
   
   /**
-   *Formats JsonObject to its final form.
+   *Formats JsonObject to its final form with "base" parameter currency output and Json string containing all markets in a "markets" Json parameter. .
+   *@param currency
+   *       The currency of the output.
    *@return JSONObject
    */
   public JSONObject finalData2(String currency) {
     JSONObject jo = new JSONObject();
     jo.put("markets", this.finalData(currency).toString());
-    jo.put("Base", "SEK");
+    jo.put("Base", currency);
     return jo;
   }
 
   /**
-   * Converts between currencies
+   * Converts one amount in one currency to another. 
+   * @param oneBtCinBeginCUR
+   *        How much one BTC cost in the currency specified by the
+   *        beginCUR parameter.
+   * @param beginCUR
+   *        Wish currency you want to convert from.
+   * @param finalCUR
+   *        Wish currency you want to convert to. 
+   * @return Price of one bitcoin.
    */
   public double btcCurrencyConverter(double oneBTCinBeginCUR, String beginCUR, String finalCUR) {
     JSONObject m = this.getCurrencyJsonObject();
@@ -135,7 +147,7 @@ public class ProcesserStats {
   // Only for testing!
   public static void main(String[] args) {
     ProcesserStats p = new ProcesserStats();
-    String finalOutput = p.finalData2("DKK").toString();
+    String finalOutput = p.finalData("SEK").toString();
     System.out.println(finalOutput);
   }
 }
