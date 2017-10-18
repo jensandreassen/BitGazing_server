@@ -1,20 +1,22 @@
 package webApp;
 
+import java.util.concurrent.TimeUnit;
+
 import org.json.JSONObject;
 
 public class Controller {
 
 	private ProcesserStats procesStats;
 
-	private JSONObject marketPrices; // Bugg: behövs lagras en för varje bas-valuta.
+	private JSONObject marketPrices; // Bugg: behövs lagras ett JSONObject för varje bas-valuta.
 	private JSONObject volumeByCurrency;
 	private JSONObject errorCode = new JSONObject("{ \"key1\": \"value1\",\"key2\": \"value2\" }");
 
-	private long marketLastUpdated; // Bugg: behövs lagras en för varje bas-valuta.
+	private long marketLastUpdated; // Bugg: behövs lagras en tid för varje JSONObject.
 	private long volumeLastUpdated;
 
-	private final long MARKET_INTERVAL_MILLIS = 18 ^ 6; // Ersätt med antal timmar till uppdatering
-	private final long VOLUME_INTERVAL_MILLIS = 18 ^ 6; // Ersätt med antal timmar till uppdatering
+	private final long MARKET_INTERVAL_MILLIS = TimeUnit.HOURS.toMillis(5);
+	private final long VOLUME_INTERVAL_MILLIS = TimeUnit.HOURS.toMillis(5);
 
 	public Controller() {
 		this.procesStats = new ProcesserStats();
@@ -28,7 +30,8 @@ public class Controller {
 	public JSONObject getMarketPrices(String baseCurrency) {
 		try {
 			if (marketPrices == null || marketLastUpdated + MARKET_INTERVAL_MILLIS < System.currentTimeMillis()) {
-				marketPrices = procesStats.finalData2(baseCurrency);
+				System.out.println("Updating prices!");
+				marketPrices = procesStats.finalData2(baseCurrency.toUpperCase());
 				marketLastUpdated = System.currentTimeMillis();
 			}
 		} catch (Exception e) {
@@ -46,6 +49,7 @@ public class Controller {
 	public JSONObject getBTCVolumeByCurrency() {
 		try {
 			if (volumeByCurrency == null || volumeLastUpdated + VOLUME_INTERVAL_MILLIS < System.currentTimeMillis()) {
+				System.out.println("Updating volumes!");
 				volumeByCurrency = ProcessorVolume.getBTCVolumeByCurrency();
 				volumeLastUpdated = System.currentTimeMillis();
 			}
