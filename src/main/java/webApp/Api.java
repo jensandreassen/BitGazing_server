@@ -20,7 +20,7 @@ public class Api {
 			response.status(200);	
 			String baseCurrency = request.params(":baseCurrency");
 			System.out.println("Förfrågan kom: " + request.pathInfo());
-			return cont.getMarketPrices(baseCurrency);
+			return cont.getMarketPrices(baseCurrency.toUpperCase());
 		});
 		
 		get("/volumes", "application/json", (request, response) -> {

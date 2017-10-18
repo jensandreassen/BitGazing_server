@@ -39,7 +39,7 @@ public class Controller {
 			if (marketPrices == null || marketPrices.lastTimeUpdated + MARKET_INTERVAL_MILLIS < System.currentTimeMillis()) {
 				System.out.println("Updating prices!");
 				marketPrices = new MarketPricesWrapper();
-				marketPrices.marketPrices = procesStats.finalData2(baseCurrency.toUpperCase());
+				marketPrices.marketPrices = procesStats.finalData2(baseCurrency);
 				marketPrices.lastTimeUpdated = System.currentTimeMillis();
 				marketPricesMappedByCurrency.put(baseCurrency, marketPrices);
 			}
