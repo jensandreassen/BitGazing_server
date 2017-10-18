@@ -1,22 +1,28 @@
 package webApp;
 
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 import org.json.JSONObject;
 
 public class Controller {
+	
+	private class MarketPricesWrapper {
+		public JSONObject marketPrices;
+		public long lastTimeUpdated;
+	}
 
 	private ProcesserStats procesStats;
-
-	private JSONObject marketPrices; // Bugg: behövs lagras ett JSONObject för varje bas-valuta.
-	private JSONObject volumeByCurrency;
-	private JSONObject errorCode = new JSONObject("{ \"key1\": \"value1\",\"key2\": \"value2\" }");
-
-	private long marketLastUpdated; // Bugg: behövs lagras en tid för varje JSONObject.
-	private long volumeLastUpdated;
-
+	
+	private Map<String, MarketPricesWrapper> marketPricesMappedByCurrency = new TreeMap<>();
 	private final long MARKET_INTERVAL_MILLIS = TimeUnit.HOURS.toMillis(5);
+	
+	private JSONObject volumeByCurrency;
+	private long volumeLastUpdated;
 	private final long VOLUME_INTERVAL_MILLIS = TimeUnit.HOURS.toMillis(5);
+	
+	private JSONObject errorCode = new JSONObject("{ \"key1\": \"value1\",\"key2\": \"value2\" }");
 
 	public Controller() {
 		this.procesStats = new ProcesserStats();
@@ -28,18 +34,22 @@ public class Controller {
 	 * @return A JSONObject.
 	 */
 	public JSONObject getMarketPrices(String baseCurrency) {
+		MarketPricesWrapper marketPrices = marketPricesMappedByCurrency.get(baseCurrency);
 		try {
-			if (marketPrices == null || marketLastUpdated + MARKET_INTERVAL_MILLIS < System.currentTimeMillis()) {
+			if (marketPrices == null || marketPrices.lastTimeUpdated + MARKET_INTERVAL_MILLIS < System.currentTimeMillis()) {
 				System.out.println("Updating prices!");
-				marketPrices = procesStats.finalData2(baseCurrency.toUpperCase());
-				marketLastUpdated = System.currentTimeMillis();
+				marketPrices = new MarketPricesWrapper();
+				marketPrices.marketPrices = procesStats.finalData2(baseCurrency.toUpperCase());
+				marketPrices.lastTimeUpdated = System.currentTimeMillis();
+				marketPricesMappedByCurrency.put(baseCurrency, marketPrices);
 			}
 		} catch (Exception e) {
-			if (marketPrices == null) {
+			e.printStackTrace();
+			if (marketPrices.marketPrices == null) {
 				return errorCode;
 			}
 		}
-		return marketPrices;
+		return marketPrices.marketPrices;
 	}
 
 	/**
