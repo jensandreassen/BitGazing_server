@@ -147,7 +147,7 @@ public class ProcesserStats {
   // Only for testing!
   public static void main(String[] args) {
     ProcesserStats p = new ProcesserStats();
-    String finalOutput = p.finalData("SEK").toString();
+    String finalOutput = p.finalData("SEK").toString(2);
     System.out.println(finalOutput);
   }
 }

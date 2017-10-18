@@ -4,25 +4,32 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.gson.JsonParser;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
-//Hej kalle! 
-//Hej Oscar!
 
 /**
  * ProcessorMap hämtar data från extent API och bearbetar den.
  */
 public final class ProcessorMap {
 
+	//Förhindrar instansiering av klassen.
 	private ProcessorMap() {}
 	
-	public static String readDataFromFile(String fileName) throws Exception {
+	/**
+	 * Läs in data från en text-fil.
+	 * @param fileName
+	 * @return
+	 * @throws IOException 
+	 */
+	private static String readDataFromFile(String fileName) throws IOException {
 		BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
 		StringBuilder sb = new StringBuilder();
 		while (true) {
@@ -35,23 +42,20 @@ public final class ProcessorMap {
 		return sb.toString();
 	}
 
-	//Anropas från Controller för att hämta ny data.
-	
-	//Data beskrivs som följande:
-	//Total volym(BTC eller procent) per valuta(kartan)
-	
 	/**
 	 * Metoden returnerar total BTC-handelsvolym per valuta.
+	 * @throws Exception 
+	 * @throws JSONException 
 	 * @throws IOException 
 	 * @throws UnirestException 
 	 */
-	public static JSONObject getBTCVolumeByCurrency() throws Exception {
-		//Fetch data
+	public static JSONObject getBTCVolumeByCurrency() throws JSONException, IOException {
+		//Fetch data from API or text-file
 //		JSONArray markets = DataFetcher.fetchAllBTCMarkets();
 		JSONArray markets = new JSONArray(readDataFromFile("files/MarketData.txt"));
 		
 		//Read and extract relevant market data.
-		HashMap<String, Double> volumeByCurrencyMap = new HashMap<>();
+		Map<String, Double> volumeByCurrencyMap = new TreeMap<>();
 		for (int i = 0; i < markets.length(); i++) {
 			JSONObject market = markets.getJSONObject(i);
 			String currency = market.getString("currency");
@@ -72,11 +76,11 @@ public final class ProcessorMap {
 			double volume = volumeByCurrencyMap.get(currency);
 			jsonVolumeByCurrency.put(currency, volume);
 		}
-		
 		return jsonVolumeByCurrency;
 	}
 	
 	public static void main(String[] args) throws Exception {
-		System.out.println(ProcessorMap.getBTCVolumeByCurrency().toString());
+		//Kör för att få exempel på utdata.
+		System.out.println(ProcessorMap.getBTCVolumeByCurrency().toString(2));
 	}
 }
