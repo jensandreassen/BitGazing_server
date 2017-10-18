@@ -3,6 +3,7 @@ package webApp;
 import java.io.IOException;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.mashape.unirest.http.HttpResponse;
@@ -61,6 +62,13 @@ public class DataFetcher {
 		Unirest.shutdown();
 		JSONObject currencyRates = response.getBody().getObject();
 		return currencyRates;
+	}
+	
+	public static void main(String[] args) throws JSONException, UnirestException, IOException {
+		//Hämta data och skriv ut i console.
+//		System.out.println(fetchAllBTCMarkets().toString(2));
+//		System.out.println(fetchBTCMarket("kraken").toString(2));
+		System.out.println(fetchCurrencyRates().toString(2));
 	}
 
 }
