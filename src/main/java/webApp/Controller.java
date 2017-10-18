@@ -44,7 +44,6 @@ public class Controller {
 				marketPricesMappedByCurrency.put(baseCurrency, marketPrices);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			if (marketPrices.marketPrices == null) {
 				return errorCode;
 			}
