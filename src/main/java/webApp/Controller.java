@@ -1,73 +1,64 @@
 package webApp;
 
-import java.util.Calendar;
-import java.util.HashMap;
-
-import javax.annotation.processing.Processor;
-
 import org.json.JSONObject;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 public class Controller {
 
-	private ProcesserStats procesStat;
-	private ProcessorMap processMap;
-	private JSONObject stats;
-	private JSONObject currency;
-	private Calendar cal;
-	private long statsTime;
-	private long currencyTime;
-	final long marketIntervall = 18^6; // Ersätt med antal timmar till uppdatering
-	final long currencyIntervall = 18^6; // Ersätt med antal timmar till uppdatering
-	private JSONObject errorCode = new JSONObject();
-	
-	public Controller(ProcesserStats procesStat, ProcessorMap processMap) {
-		this.procesStat = procesStat;
-		this.processMap = processMap;
+	private ProcesserStats procesStats;
+
+	private JSONObject marketPrices; // Bugg: behövs lagras en för varje bas-valuta.
+	private JSONObject volumeByCurrency;
+	private JSONObject errorCode = new JSONObject("{ \"key1\": \"value1\",\"key2\": \"value2\" }");
+
+	private long marketLastUpdated; // Bugg: behövs lagras en för varje bas-valuta.
+	private long volumeLastUpdated;
+
+	private final long MARKET_INTERVAL_MILLIS = 18 ^ 6; // Ersätt med antal timmar till uppdatering
+	private final long VOLUME_INTERVAL_MILLIS = 18 ^ 6; // Ersätt med antal timmar till uppdatering
+
+	public Controller() {
+		this.procesStats = new ProcesserStats();
 	}
-	
-	public JSONObject getStats(String param) {
+
+	/**
+	 * Returns the price of different markets in <code>baseCurrency</code>.
+	 * @param baseCurrency The base currency to display the price of the markets in.
+	 * @return A JSONObject.
+	 */
+	public JSONObject getMarketPrices(String baseCurrency) {
 		try {
-			if(stats==null) {
-				stats = procesStat.finalData2(param);
-				statsTime = cal.getTimeInMillis();
-			} else if(statsTime+marketIntervall<cal.getTimeInMillis()) {
-				stats = procesStat.finalData2(param);
-				statsTime = cal.getTimeInMillis();
+			if (marketPrices == null || marketLastUpdated + MARKET_INTERVAL_MILLIS < System.currentTimeMillis()) {
+				marketPrices = procesStats.finalData2(baseCurrency);
+				marketLastUpdated = System.currentTimeMillis();
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
-			if(stats==null) {
+			if (marketPrices == null) {
 				return errorCode;
 			}
 		}
-		return stats;
+		return marketPrices;
 	}
-	
-	public JSONObject getCurrency() {
+
+	/**
+	 * Returnerar total BTC-handelsvolym per valuta sammantaget från flera marknader.
+	 * @return A JSONObject.
+	 */
+	public JSONObject getBTCVolumeByCurrency() {
 		try {
-			if(currency==null) {
-				//currency = process.get
-				currencyTime = cal.getTimeInMillis();
-			} else if(currencyTime+currencyIntervall<cal.getTimeInMillis()) {
-				//currency = process.get
-				currencyTime = cal.getTimeInMillis();
+			if (volumeByCurrency == null || volumeLastUpdated + VOLUME_INTERVAL_MILLIS < System.currentTimeMillis()) {
+				volumeByCurrency = ProcessorVolume.getBTCVolumeByCurrency();
+				volumeLastUpdated = System.currentTimeMillis();
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
-			if(currency==null) {
+			if (volumeByCurrency == null) {
 				return errorCode;
 			}
 		}
-		return currency;
+		return volumeByCurrency;
 	}
-	
+
 	public static void main(String[] args) {
-		ProcesserStats procesStat = new ProcesserStats();
-		ProcessorMap processMap = new ProcessorMap();
-		Controller cont = new Controller(procesStat, processMap);
+		Controller cont = new Controller();
 		Api api = new Api(cont);
 	}
 }
