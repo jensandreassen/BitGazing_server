@@ -11,17 +11,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.google.gson.JsonParser;
-import com.mashape.unirest.http.exceptions.UnirestException;
-
 
 /**
- * ProcessorMap hämtar data från extent API och bearbetar den.
+ * Klassen hämtar data från extent API och bearbetar den.
  */
-public final class ProcessorMap {
+public final class ProcessorVolume {
 
 	//Förhindrar instansiering av klassen.
-	private ProcessorMap() {}
+	private ProcessorVolume() {}
 	
 	/**
 	 * Läs in data från en text-fil.
@@ -43,11 +40,10 @@ public final class ProcessorMap {
 	}
 
 	/**
-	 * Metoden returnerar total BTC-handelsvolym per valuta.
-	 * @throws Exception 
-	 * @throws JSONException 
-	 * @throws IOException 
-	 * @throws UnirestException 
+	 * Metoden returnerar total BTC-handelsvolym per valuta sammantaget från flera markets.
+	 * @return Ett JSONObject.
+	 * @throws JSONException
+	 * @throws IOException
 	 */
 	public static JSONObject getBTCVolumeByCurrency() throws JSONException, IOException {
 		//Fetch data from API or text-file
@@ -81,6 +77,6 @@ public final class ProcessorMap {
 	
 	public static void main(String[] args) throws Exception {
 		//Kör för att få exempel på utdata.
-		System.out.println(ProcessorMap.getBTCVolumeByCurrency().toString(2));
+		System.out.println(ProcessorVolume.getBTCVolumeByCurrency().toString(2));
 	}
 }
