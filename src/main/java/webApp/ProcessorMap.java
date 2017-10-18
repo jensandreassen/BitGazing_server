@@ -20,7 +20,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
  */
 public final class ProcessorMap {
 
-	private ProcessorMap() {}
+	public ProcessorMap() {}
 	
 	public static String readDataFromFile(String fileName) throws Exception {
 		BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));

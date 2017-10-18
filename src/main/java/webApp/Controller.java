@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import javax.annotation.processing.Processor;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.google.gson.Gson;
@@ -14,7 +15,7 @@ public class Controller {
 
 	private ProcesserStats procesStat;
 	private ProcessorMap processMap;
-	private JSONObject stats;
+	private JSONArray stats;
 	private JSONObject currency;
 	private Calendar cal;
 	private long statsTime;
@@ -22,25 +23,26 @@ public class Controller {
 	final long marketIntervall = 18^6; // Ersätt med antal timmar till uppdatering
 	final long currencyIntervall = 18^6; // Ersätt med antal timmar till uppdatering
 	private JSONObject errorCode = new JSONObject();
+	private JSONArray errorCodeArr = new JSONArray();
 	
 	public Controller(ProcesserStats procesStat, ProcessorMap processMap) {
 		this.procesStat = procesStat;
 		this.processMap = processMap;
 	}
 	
-	public JSONObject getStats(String param) {
+	public JSONArray getStats(String param) {
 		try {
 			if(stats==null) {
-				stats = procesStat.finalData2(param);
+				stats = procesStat.finalData(param);
 				statsTime = cal.getTimeInMillis();
 			} else if(statsTime+marketIntervall<cal.getTimeInMillis()) {
-				stats = procesStat.finalData2(param);
+				stats = procesStat.finalData(param);
 				statsTime = cal.getTimeInMillis();
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
 			if(stats==null) {
-				return errorCode;
+				return errorCodeArr;
 			}
 		}
 		return stats;
