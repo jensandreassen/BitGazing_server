@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import java.util.HashMap;
 
 public class Controller {
 
@@ -45,7 +46,7 @@ public class Controller {
 			if (marketPrices == null || marketPrices.lastTimeUpdated + MARKET_INTERVAL_MILLIS < System.currentTimeMillis()) {
 				System.out.println("Updating prices!");
 				marketPrices = new MarketPricesWrapper();
-				marketPrices.marketPrices = procesStats.finalData(baseCurrency);
+				marketPrices.marketPrices = procesStats.marketMap().get(baseCurrency);
 				marketPrices.lastTimeUpdated = System.currentTimeMillis();
 				marketPricesMappedByCurrency.put(baseCurrency, marketPrices);
 			}
