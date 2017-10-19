@@ -1,75 +1,84 @@
 package webApp;
 
-import java.util.Calendar;
-import java.util.HashMap;
-
-import javax.annotation.processing.Processor;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
 public class Controller {
 
-	private ProcesserStats procesStat;
-	private ProcessorMap processMap;
-	private JSONArray stats;
-	private JSONObject currency;
-	private Calendar cal;
-	private long statsTime;
-	private long currencyTime;
 	final long marketIntervall = 18^6; // Ersätt med antal timmar till uppdatering
 	final long currencyIntervall = 18^6; // Ersätt med antal timmar till uppdatering
-	private JSONObject errorCode = new JSONObject();
+	private JSONObject errorCode = new JSONObject("{ \"key1\": \"value1\",\"key2\": \"value2\" }");
 	private JSONArray errorCodeArr = new JSONArray();
+
+
+	private Map<String, MarketPricesWrapper> marketPricesMappedByCurrency = new TreeMap<>();
+	private final long MARKET_INTERVAL_MILLIS = TimeUnit.HOURS.toMillis(5);
 	
-	public Controller(ProcesserStats procesStat, ProcessorMap processMap) {
-		this.procesStat = procesStat;
-		this.processMap = processMap;
+	private JSONObject volumeByCurrency;
+	private long volumeLastUpdated;
+	private final long VOLUME_INTERVAL_MILLIS = TimeUnit.HOURS.toMillis(5);
+	
+	
+	private class MarketPricesWrapper {
+		public JSONArray marketPrices;
+		public long lastTimeUpdated;
 	}
+
+	private ProcesserStats procesStats;
 	
-	public JSONArray getStats(String param) {
+	public Controller() {
+		this.procesStats = new ProcesserStats();
+	}
+
+	/**
+	 * Returns the price of different markets in <code>baseCurrency</code>.
+	 * @param baseCurrency The base currency to display the price of the markets in.
+	 * @return A JSONObject.
+	 */
+	public JSONArray getMarketPrices(String baseCurrency) {
+		MarketPricesWrapper marketPrices = marketPricesMappedByCurrency.get(baseCurrency);
 		try {
-			if(stats==null) {
-				stats = procesStat.finalData(param);
-				statsTime = cal.getTimeInMillis();
-			} else if(statsTime+marketIntervall<cal.getTimeInMillis()) {
-				stats = procesStat.finalData(param);
-				statsTime = cal.getTimeInMillis();
+			if (marketPrices == null || marketPrices.lastTimeUpdated + MARKET_INTERVAL_MILLIS < System.currentTimeMillis()) {
+				System.out.println("Updating prices!");
+				marketPrices = new MarketPricesWrapper();
+				marketPrices.marketPrices = procesStats.finalData(baseCurrency);
+				marketPrices.lastTimeUpdated = System.currentTimeMillis();
+				marketPricesMappedByCurrency.put(baseCurrency, marketPrices);
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
-			if(stats==null) {
+			if (marketPrices.marketPrices == null) {
 				return errorCodeArr;
 			}
 		}
-		return stats;
+		return marketPrices.marketPrices;
 	}
-	
-	public JSONObject getCurrency() {
+
+	/**
+	 * Returnerar total BTC-handelsvolym per valuta sammantaget från flera marknader.
+	 * @return A JSONObject.
+	 */
+	public JSONObject getBTCVolumeByCurrency() {
 		try {
-			if(currency==null) {
-				//currency = process.get
-				currencyTime = cal.getTimeInMillis();
-			} else if(currencyTime+currencyIntervall<cal.getTimeInMillis()) {
-				//currency = process.get
-				currencyTime = cal.getTimeInMillis();
+			if (volumeByCurrency == null || volumeLastUpdated + VOLUME_INTERVAL_MILLIS < System.currentTimeMillis()) {
+				System.out.println("Updating volumes!");
+				volumeByCurrency = ProcessorVolume.getBTCVolumeByCurrency();
+				volumeLastUpdated = System.currentTimeMillis();
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
-			if(currency==null) {
+			if (volumeByCurrency == null) {
 				return errorCode;
 			}
 		}
-		return currency;
+		return volumeByCurrency;
 	}
-	
+
 	public static void main(String[] args) {
-		ProcesserStats procesStat = new ProcesserStats();
-		ProcessorMap processMap = new ProcessorMap();
-		Controller cont = new Controller(procesStat, processMap);
-		Api api = new Api(cont);
+		Controller cont = new Controller();
+    Api api = new Api(cont);
+
 	}
 }

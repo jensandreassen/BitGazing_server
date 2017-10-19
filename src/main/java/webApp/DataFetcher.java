@@ -2,6 +2,8 @@ package webApp;
 
 import java.io.IOException;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.mashape.unirest.http.HttpResponse;
@@ -34,12 +36,12 @@ public class DataFetcher {
 	 * @throws UnirestException
 	 * @throws IOException
 	 */
-	public static JSONObject fetchAllBTCMarkets() throws UnirestException, IOException {
+	public static JSONArray fetchAllBTCMarkets() throws UnirestException, IOException {
 		HttpResponse<JsonNode> response = Unirest.get("http://api.bitcoincharts.com/v1/markets.json")
 		.header("accept", "application/json")
 		.asJson();
 		Unirest.shutdown();
-		JSONObject allMarkets = response.getBody().getObject();
+		JSONArray allMarkets = response.getBody().getArray();
 		return allMarkets;
 	}
 	
@@ -60,6 +62,13 @@ public class DataFetcher {
 		Unirest.shutdown();
 		JSONObject currencyRates = response.getBody().getObject();
 		return currencyRates;
+	}
+	
+	public static void main(String[] args) throws JSONException, UnirestException, IOException {
+		//Hämta data och skriv ut i console.
+//		System.out.println(fetchAllBTCMarkets().toString(2));
+//		System.out.println(fetchBTCMarket("kraken").toString(2));
+		System.out.println(fetchCurrencyRates().toString(2));
 	}
 
 }

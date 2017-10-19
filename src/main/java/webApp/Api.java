@@ -2,7 +2,6 @@ package webApp;
 
 import static spark.Spark.port;
 import static spark.Spark.get;
-import com.google.gson.Gson;
 	
 public class Api {
 	private Controller cont;
@@ -15,21 +14,20 @@ public class Api {
 	public void run() {
 		port(5000);
 		
-		get("/currency/:currency", "application/json", (request, response) -> {
+  //Förslag: /marketPrices/:baseCurrency
+		get("/currency/:baseCurrency", "application/json", (request, response) -> {
 			response.type("application/json; charset=UTF-8");
 			response.status(200);	
-			String param = request.params(":currency");
-			System.out.println("Förfrågan kom");
-			return cont.getStats(param);
+			String baseCurrency = request.params(":baseCurrency");
+			System.out.println("Förfrågan kom: " + request.pathInfo());
+			return cont.getMarketPrices(baseCurrency.toUpperCase());
 		});
 		
-		
-		get("/getinfo", "application/json", (request, response) -> {
+		get("/volumes", "application/json", (request, response) -> {
 			response.type("application/json; charset=UTF-8");
 			response.status(200);
-			System.out.println("Förfrågan kom");
-//			return cont.getMarket();
-			return cont.getCurrency();
+			System.out.println("Förfrågan kom: " + request.pathInfo());
+			return cont.getBTCVolumeByCurrency();
 		});
 	}	
 }

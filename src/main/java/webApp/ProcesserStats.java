@@ -1,14 +1,12 @@
 package webApp;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.Map;
+import java.util.HashMap;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 /**
  * Processes market data and currencies to become markets volume in one
@@ -17,20 +15,25 @@ import com.google.gson.reflect.TypeToken;
 public class ProcesserStats {
   private static Gson gson = new Gson();
   private FileReader fr = new FileReader();
-  private String marketJson;
   private String currencyJson;
+  private Market[] marketBeans;
+  JSONObject currencyRates;
+  DataFetcher datafetcher = new DataFetcher();
 
   /**
    * Construktor at the moment reads files containing market data and
    * currency data Those files will later be delivered by dataFetcher. 
    */
   public ProcesserStats() {
+    String marketJson = "";
     try {
-      this.marketJson = fr.readFile("files/MarketData.txt");
+      marketJson = fr.readFile("files/MarketData.txt");
       this.currencyJson = fr.readFile("files/currencyRates.json");
     } catch (IOException e) {
       e.printStackTrace();
     }
+    marketBeans = getMarketGsonBeans(marketJson);//Här ska JSONObject.toString in från DataFetcher
+    currencyRates = getCurrencyRates(this.getCurrencyJsonObject());//Här ska JSONObject från DataFetcher läggas in.
   }
 
   /**
@@ -38,21 +41,9 @@ public class ProcesserStats {
    * 
    * @return Market[]
    */
-  public Market[] getMarketGsonBeans() {
+  public Market[] getMarketGsonBeans(String marketJson) {
     Market[] data = gson.fromJson(marketJson, Market[].class);
     return data;
-  }
-
-  /**
-   * Creates a map out of currency data.
-   * 
-   * @return Map
-   */
-  public Map<String, String> getCurrencyHashMap() {
-    Type type = new TypeToken<Map<String, String>>() {
-    }.getType();
-    Map<String, String> myMap = new Gson().fromJson(currencyJson, type);
-    return myMap;
   }
 
   /**
@@ -71,8 +62,9 @@ public class ProcesserStats {
    *
    * @return JSONObject
    */
-  public JSONObject stringToJsonObject(String jsonString) {
-    JSONObject jo = new JSONObject(jsonString);
+  public JSONObject getCurrencyRates(JSONObject currencyJson) {
+    String ratesStr = currencyJson.optString("rates");
+    JSONObject jo = new JSONObject(ratesStr);
     return jo;
   }
   
@@ -84,9 +76,8 @@ public class ProcesserStats {
    * @return JSONArray
    */
   public JSONArray finalData(String currency) {
-    Market[] data = this.getMarketGsonBeans();
     JSONArray ja = new JSONArray();
-    for(Market mrkt : data) {
+    for(Market mrkt : marketBeans) {
       JSONObject js = new JSONObject();
       if(mrkt.volume>0) {
         double finalCurrency = btcCurrencyConverter(mrkt.close, mrkt.currency, currency); 
@@ -98,6 +89,18 @@ public class ProcesserStats {
     return ja;
   }
   
+  /**
+   * Get all markets in all currencies
+   */
+  public HashMap<String, JSONArray> marketMap(){
+    HashMap<String, JSONArray> markets = new HashMap<String, JSONArray>();
+    for(String CUR : currencyRates.keySet()){
+      markets.put(CUR, finalData(CUR));
+    }
+    System.out.println(markets.get("SEK").toString());
+    return markets;
+  }
+
   /**
    *Formats JsonObject to its final form with "base" parameter currency output and
    *Json string containing all markets in a "markets" Json parameter. .
@@ -124,21 +127,18 @@ public class ProcesserStats {
    * @return Price of one bitcoin.
    */
   public double btcCurrencyConverter(double oneBTCinBeginCUR, String beginCUR, String finalCUR) {
-    JSONObject m = this.getCurrencyJsonObject();
-    String ratesStr = m.optString("rates");
-    JSONObject currencies = this.stringToJsonObject(ratesStr);
     double finalPrice = -1;
     double goalCURinUSD;
     if (beginCUR.contentEquals(finalCUR)) {
       finalPrice = oneBTCinBeginCUR;
     } else if (beginCUR.equals("USD")) {
-      goalCURinUSD = (Double) currencies.get(finalCUR);
+      goalCURinUSD = currencyRates.getDouble(finalCUR);
       finalPrice = oneBTCinBeginCUR * goalCURinUSD;
     } else if (finalCUR.equals("USD")) {
-      finalPrice = oneBTCinBeginCUR *(1/((Double) currencies.get(beginCUR)));
+      finalPrice = oneBTCinBeginCUR *(1/(currencyRates.getDouble(beginCUR)));
     } else {
-      goalCURinUSD = (Double) currencies.get(finalCUR);
-      double beginCURinUSD = (Double) currencies.get(beginCUR);
+      goalCURinUSD = currencyRates.getDouble(finalCUR); //Här är det någit som är vajsing, output är int(heltal) så funkar det inte. 
+      double beginCURinUSD = currencyRates.getDouble(beginCUR);
       double goalCURinBeginCUR = (1 / beginCURinUSD) * goalCURinUSD;
       finalPrice = oneBTCinBeginCUR * goalCURinBeginCUR;
     }
@@ -148,7 +148,10 @@ public class ProcesserStats {
   // Only for testing!
   public static void main(String[] args) {
     ProcesserStats p = new ProcesserStats();
-    String finalOutput = p.finalData("SEK").toString();
-    System.out.println(finalOutput);
+//    String finalOutput = p.finalData("SEK").toString(2);
+//    System.out.println(finalOutput);
+    HashMap<String, JSONArray> hm = p.marketMap();
+    System.out.println(hm.get("USD").toString(2));
+    
   }
 }
