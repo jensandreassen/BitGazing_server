@@ -14,10 +14,9 @@ public class Api {
 	public void run() {
 		port(5000);
 		
-  //Förslag: /marketPrices/:baseCurrency
-		get("/currency/:baseCurrency", "application/json", (request, response) -> {
+		get("/marketPrices/:baseCurrency", "application/json", (request, response) -> {
 			response.type("application/json; charset=UTF-8");
-			response.status(200);	
+			response.status(200);
 			String baseCurrency = request.params(":baseCurrency");
 			System.out.println("Förfrågan kom: " + request.pathInfo());
 			return cont.getMarketPrices(baseCurrency.toUpperCase());
