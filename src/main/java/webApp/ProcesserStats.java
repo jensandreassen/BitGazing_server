@@ -1,6 +1,8 @@
 package webApp;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -97,7 +99,7 @@ public class ProcesserStats {
       if(mrkt.volume>0) {
         double finalCurrency = btcCurrencyConverter(mrkt.close, mrkt.currency, currency); 
       js.put("market", mrkt.symbol.substring(0,1).toUpperCase() + mrkt.symbol.substring(1,mrkt.symbol.length() - 3));
-        js.put("last_price", numberFormat.format(finalCurrency));
+        js.put("last_price", round(finalCurrency, 2));
         js.put("marketCurrency", mrkt.currency);
         tmp.add(js);
       }
@@ -174,9 +176,18 @@ public class ProcesserStats {
     return finalPrice;
   }
 
+  public static double round(double value, int places) {
+      if (places < 0) throw new IllegalArgumentException();
+
+      BigDecimal bd = new BigDecimal(value);
+      bd = bd.setScale(places, RoundingMode.HALF_UP);
+      return bd.doubleValue();
+  }
+
   // Only for testing!
   public static void main(String[] args) {
     ProcesserStats p = new ProcesserStats();
+//    System.out.println(p.finalData("SEK").toString(2));
     HashMap<String, JSONArray> hm = p.marketMap();
     System.out.println(hm.get("USD").toString(2));
     
