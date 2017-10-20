@@ -8,6 +8,8 @@ import java.io.IOException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.mashape.unirest.http.exceptions.UnirestException;
+
 import static spark.Spark.get;
 	
 public class Api {
@@ -33,7 +35,7 @@ public class Api {
 			} catch (FileNotFoundException e) {
 				response.status(404);
 				return errorNotFound.toString(2);
-			} catch (JSONException | IOException e) {
+			} catch (JSONException | IOException | UnirestException e) {
 				response.status(500);
 				return errorInternal.toString(2);
 			}
@@ -45,7 +47,7 @@ public class Api {
 			System.out.println("Förfrågan kom: " + request.pathInfo());
 			try {
 				return cont.getBTCVolumeByCurrency();
-			} catch (JSONException | IOException e) {
+			} catch (JSONException | IOException | UnirestException e) {
 				response.status(500);
 				return errorInternal.toString(2);
 			}

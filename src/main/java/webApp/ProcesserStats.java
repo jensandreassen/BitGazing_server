@@ -29,7 +29,7 @@ public class ProcesserStats {
    * Construktor at the moment reads files containing market data and
    * currency data Those files will later be delivered by dataFetcher. 
    */
-  public ProcesserStats() {
+  public ProcesserStats() throws UnirestException, IOException {
     String marketJson = "";
     try {
       marketJson = fr.readFile("files/MarketData.txt");
@@ -39,17 +39,9 @@ public class ProcesserStats {
     }
     marketBeans = getMarketGsonBeans(marketJson);//Här ska JSONObject.toString in från DataFetcher
     currencyRates = getCurrencyRates(this.getCurrencyJsonObject());//Här ska JSONObject från DataFetcher läggas in.
-    /*
-    try {
 
 //    marketBeans = getMarketGsonBeans(DataFetcher.fetchAllBTCMarkets().toString());//Här ska JSONObject.toString in från DataFetcher
 //    currencyRates = getCurrencyRates(DataFetcher.fetchCurrencyRates());//Här ska JSONObject från DataFetcher läggas in.
-      } catch (IOException e) {
-          e.printStackTrace();
-      } catch (UnirestException d){
-          d.printStackTrace();
-      }
-      */
   }
 
   /**
@@ -185,7 +177,7 @@ public class ProcesserStats {
   }
 
   // Only for testing!
-  public static void main(String[] args) {
+  public static void main(String[] args) throws UnirestException, IOException {
     ProcesserStats p = new ProcesserStats();
 //    System.out.println(p.finalData("SEK").toString(2));
     HashMap<String, JSONArray> hm = p.marketMap();

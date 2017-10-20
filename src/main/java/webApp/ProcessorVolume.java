@@ -11,6 +11,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.mashape.unirest.http.exceptions.UnirestException;
+
 
 /**
  * Klassen hämtar data från extent API och bearbetar den.
@@ -42,10 +44,8 @@ public final class ProcessorVolume {
 	/**
 	 * Metoden returnerar total BTC-handelsvolym per valuta sammantaget från flera markets.
 	 * @return Ett JSONObject.
-	 * @throws JSONException
-	 * @throws IOException
 	 */
-	public static JSONObject getBTCVolumeByCurrency() throws JSONException, IOException {
+	public static JSONObject getBTCVolumeByCurrency() throws JSONException, IOException, UnirestException {
 		//Fetch data from API or text-file
 //		JSONArray markets = DataFetcher.fetchAllBTCMarkets();
 		JSONArray markets = new JSONArray(readDataFromFile("files/MarketData.txt"));
