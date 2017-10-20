@@ -96,7 +96,7 @@ public class ProcesserStats {
       JSONObject js = new JSONObject();
       if(mrkt.volume>0) {
         double finalCurrency = btcCurrencyConverter(mrkt.close, mrkt.currency, currency); 
-        js.put("market", mrkt.symbol.substring(0,1).toUpperCase() + mrkt.symbol.substring(1,mrkt.symbol.length() - 3));
+      js.put("market", mrkt.symbol.substring(0,1).toUpperCase() + mrkt.symbol.substring(1,mrkt.symbol.length() - 3));
         js.put("last_price", numberFormat.format(finalCurrency));
         js.put("marketCurrency", mrkt.currency);
         tmp.add(js);
@@ -177,7 +177,6 @@ public class ProcesserStats {
   // Only for testing!
   public static void main(String[] args) {
     ProcesserStats p = new ProcesserStats();
-//    System.out.println(p.finalData("SEK").toString(2));
     HashMap<String, JSONArray> hm = p.marketMap();
     System.out.println(hm.get("USD").toString(2));
     
