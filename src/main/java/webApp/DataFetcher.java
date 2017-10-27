@@ -13,6 +13,9 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 public class DataFetcher {
 	
+	//Förhindra instansiering
+	private DataFetcher() {}
+	
 	/**
 	 * Hämtar marknads-data om en specifik marknad från bitcoinaverage.com
 	 * @param market
@@ -24,7 +27,6 @@ public class DataFetcher {
 		HttpResponse<JsonNode> response = Unirest.get("https://apiv2.bitcoinaverage.com/exchanges/ticker/" + market)
 		.header("accept", "application/json")
 		.asJson();
-		Unirest.shutdown();
 		JSONObject marketData = response.getBody().getObject();
 		return marketData;
 	}
@@ -40,7 +42,6 @@ public class DataFetcher {
 		HttpResponse<JsonNode> response = Unirest.get("http://api.bitcoincharts.com/v1/markets.json")
 		.header("accept", "application/json")
 		.asJson();
-		Unirest.shutdown();
 		JSONArray allMarkets = response.getBody().getArray();
 		return allMarkets;
 	}
@@ -59,7 +60,6 @@ public class DataFetcher {
 		.queryString("base", "USD") //Default: USD
 		.queryString("prettyprint", "1") //Default: 1
 		.asJson();
-		Unirest.shutdown();
 		JSONObject currencyRates = response.getBody().getObject();
 		return currencyRates;
 	}
