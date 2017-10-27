@@ -45,9 +45,10 @@ public class ProcesserStats {
   }
 
   /**
-   * Get all market data as a array.
-   * 
+   * Converts Json fromatted market data string to a array of Market
+   * objects.
    * @return Market[]
+   *         Array contains Market objects.
    */
   public Market[] getMarketGsonBeans(String marketJson) {
     Market[] data = gson.fromJson(marketJson, Market[].class);
@@ -55,9 +56,12 @@ public class ProcesserStats {
   }
 
   /**
-   * Creates a JSONobject out of currency data.
-   * 
-   * @return JSONObject containing 
+   * Creates a JSONobject out of currency data currently this metod
+   * reads a text string and will not be used when data is fetched
+   * from datafestcher since it delivers a JSONObject to
+   * "getCurrencyRates" method.
+   * @return JSONObject
+   *         
    */
   public JSONObject getCurrencyJsonObject() {
     JSONObject jo = new JSONObject(currencyJson);
@@ -65,10 +69,13 @@ public class ProcesserStats {
   }
 
   /**
-   * Creates a JSONObject out of json formatted String.
-   * @param jsonString
-   *
+   * Creates a JSONObject out of the "rates" parameter in the Currency
+   * JSONObject. 
+   * @param JSONObject containing CurrencyData from DataFetcher. 
+   *        
    * @return JSONObject
+   *         This object is containing all currencies in USD that
+   *         BitGazing currently support.
    */
   public JSONObject getCurrencyRates(JSONObject currencyJson) {
     String ratesStr = currencyJson.optString("rates");
@@ -82,6 +89,9 @@ public class ProcesserStats {
    * @param currency
    *        The currency of the output.
    * @return JSONArray
+   *         Contains all markets last price in one currency defined
+   *         by parameter. It is sorted by price starting with the
+   *         lowest price.
    */
   public JSONArray finalData(String currency) {
     JSONArray ja = new JSONArray();
@@ -114,7 +124,11 @@ public class ProcesserStats {
   }
   
   /**
-   * Get all markets in all currencies
+   * Get all markets in all currencies.
+   * @return HashMap<String, JsonArray>
+   *         Map key is currency in tre uppercase letters and will
+   *         return JSONArray containing all BTC markets last price in
+   *         that currency starting with the market with the lowest price. 
    */
   public HashMap<String, JSONArray> marketMap(){
     HashMap<String, JSONArray> markets = new HashMap<String, JSONArray>();
@@ -125,21 +139,8 @@ public class ProcesserStats {
   }
 
   /**
-   *Formats JsonObject to its final form with "base" parameter currency output and
-   *Json string containing all markets in a "markets" Json parameter. .
-   *@param currency
-   *       The currency of the output.
-   *@return JSONObject
-   */
-  public JSONObject finalData2(String currency) {
-    JSONObject jo = new JSONObject();
-    jo.put("markets", this.finalData(currency).toString());
-    jo.put("Base", currency);
-    return jo;
-  }
-
-  /**
-   * Converts one amount in one currency to another. 
+   * Converts one amount in one currency to another unafortunately via
+   * USD. 
    * @param oneBtCinBeginCUR
    *        How much one BTC cost in the currency specified by the
    *        beginCUR parameter.
@@ -147,7 +148,8 @@ public class ProcesserStats {
    *        Wish currency you want to convert from.
    * @param finalCUR
    *        Wish currency you want to convert to. 
-   * @return Price of one bitcoin.
+   * @return Price of one bitcoin in currency defined by parameter
+   *         'finalCUR'.
    */
   public double btcCurrencyConverter(double oneBTCinBeginCUR, String beginCUR, String finalCUR) {
     double finalPrice = -1;
@@ -160,7 +162,7 @@ public class ProcesserStats {
     } else if (finalCUR.equals("USD")) {
       finalPrice = oneBTCinBeginCUR *(1/(currencyRates.getDouble(beginCUR)));
     } else {
-      goalCURinUSD = currencyRates.getDouble(finalCUR); //Här är det någit som är vajsing, output är int(heltal) så funkar det inte. 
+      goalCURinUSD = currencyRates.getDouble(finalCUR); 
       double beginCURinUSD = currencyRates.getDouble(beginCUR);
       double goalCURinBeginCUR = (1 / beginCURinUSD) * goalCURinUSD;
       finalPrice = oneBTCinBeginCUR * goalCURinBeginCUR;
@@ -184,10 +186,9 @@ public class ProcesserStats {
       return bd.doubleValue();
   }
 
-  // Only for testing!
+  // Only for testing! Should be removed any time soon!!!!!!!!!!!!!!
   public static void main(String[] args) throws UnirestException, IOException {
     ProcesserStats p = new ProcesserStats();
-//    System.out.println(p.finalData("SEK").toString(2));
     HashMap<String, JSONArray> hm = p.marketMap();
     System.out.println(hm.get("USD").toString(2));
     
