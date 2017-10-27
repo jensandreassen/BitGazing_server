@@ -176,6 +176,14 @@ public class ProcesserStats {
     return finalPrice;
   }
 
+  /**
+   * Rounds double values to a specific amount of decimals.
+   *
+   * @param value
+   *        The value wish will be formatted.
+   * @param places
+   *        The number of decimals to be rounded to.
+   */
   public static double round(double value, int places) {
       if (places < 0) throw new IllegalArgumentException();
 
