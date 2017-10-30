@@ -34,10 +34,10 @@ public class ProcesserStats {
    */
   public ProcesserStats(boolean online) throws UnirestException, IOException {
     if (online) {
-      marketBeans = getMarketGsonBeans(DataFetcher.fetchAllBTCMarkets().toString());// Här ska JSONObject.toString
-                                              // in från DataFetcher
-      currencyRates = getCurrencyRates(DataFetcher.fetchCurrencyRates());// Här ska JSONObject från DataFetcher
-                                        // läggas in.
+      marketBeans = getMarketGsonBeans(DataFetcher.fetchAllBTCMarkets().toString());
+                                              
+      currencyRates = getCurrencyRates(DataFetcher.fetchCurrencyRates());
+                                        
     } else {
       String marketJson = "";
       try {
@@ -93,7 +93,7 @@ public class ProcesserStats {
   
   /**
    * Marchaling bitcoin markets data and produce Json Array containing all markets
-   * last price in one currency.
+   * last price in one currency sorted, starting with the cheapest.
    * @param currency
    *        The currency of the output.
    * @return JSONArray
@@ -114,9 +114,9 @@ public class ProcesserStats {
         tmp.add(js);
       }
     }   
-    int index = 0;
     for(int i = 0; i < tmp.size(); i++){
-      for(int j = i+1; j < tmp.size(); j++){
+    int index = i;
+      for(int j = i; j < tmp.size(); j++){
         if( tmp.get(j).getDouble("last_price") < tmp.get(index).getDouble("last_price")){
           index = j;
         }
@@ -125,17 +125,6 @@ public class ProcesserStats {
       tmp.set(index, tmp.get(i));
       tmp.set(i, lowerPrice);
     }
-    for(int i = 0; i < tmp.size(); i++){
-      for(int j = i+1; j < tmp.size(); j++){
-        if( tmp.get(j).getDouble("last_price") < tmp.get(index).getDouble("last_price")){
-          index = j;
-        }
-      }
-      JSONObject lowerPrice = tmp.get(index);
-      tmp.set(index, tmp.get(i));
-      tmp.set(i, lowerPrice);
-    }
-
     for(JSONObject jo : tmp){
       ja.put(jo);
     }
@@ -206,7 +195,11 @@ public class ProcesserStats {
       return bd.doubleValue();
   }
 
-  // Only for testing! Should be removed any time soon!!!!!!!!!!!!!!
+  /**
+   * Only for testing methods within this class. 
+   * @param args 
+   *        Is not used.
+   */
   public static void main(String[] args) throws UnirestException, IOException {
     ProcesserStats p = new ProcesserStats(false);
     HashMap<String, JSONArray> hm = p.marketMap();
