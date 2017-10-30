@@ -28,20 +28,28 @@ public class ProcesserStats {
   /**
    * Construktor at the moment reads files containing market data and
    * currency data Those files will later be delivered by dataFetcher. 
+   * @param online
+   *        Set TRUE if you want to get data from online or FALSE if
+   *        reading from local files.
    */
-  public ProcesserStats() throws UnirestException, IOException {
-    String marketJson = "";
-    try {
-      marketJson = fr.readFile("files/MarketData.txt");
-      this.currencyJson = fr.readFile("files/currencyRates.json");
-    } catch (IOException e) {
-      e.printStackTrace();
+  public ProcesserStats(boolean online) throws UnirestException, IOException {
+    if (online) {
+      marketBeans = getMarketGsonBeans(DataFetcher.fetchAllBTCMarkets().toString());// Här ska JSONObject.toString
+                                              // in från DataFetcher
+      currencyRates = getCurrencyRates(DataFetcher.fetchCurrencyRates());// Här ska JSONObject från DataFetcher
+                                        // läggas in.
+    } else {
+      String marketJson = "";
+      try {
+        marketJson = fr.readFile("files/MarketData.txt");
+        this.currencyJson = fr.readFile("files/currencyRates.json");
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      marketBeans = getMarketGsonBeans(marketJson);
+      currencyRates = getCurrencyRates(this.getCurrencyJsonObject());
+                                      
     }
-    marketBeans = getMarketGsonBeans(marketJson);//Här ska JSONObject.toString in från DataFetcher
-    currencyRates = getCurrencyRates(this.getCurrencyJsonObject());//Här ska JSONObject från DataFetcher läggas in.
-
-//    marketBeans = getMarketGsonBeans(DataFetcher.fetchAllBTCMarkets().toString());//Här ska JSONObject.toString in från DataFetcher
-//    currencyRates = getCurrencyRates(DataFetcher.fetchCurrencyRates());//Här ska JSONObject från DataFetcher läggas in.
   }
 
   /**
@@ -98,7 +106,7 @@ public class ProcesserStats {
     ArrayList<JSONObject> tmp = new ArrayList<JSONObject>();
     for(Market mrkt : marketBeans) {
       JSONObject js = new JSONObject();
-      if(mrkt.volume>0) {
+      if(mrkt.volume>0 && !mrkt.currency.contains("SLL") && !mrkt.currency.contains("VEF")) { //SLL and VEF is not supported.
         double finalCurrency = btcCurrencyConverter(mrkt.close, mrkt.currency, currency); 
       js.put("market", mrkt.symbol.substring(0,1).toUpperCase() + mrkt.symbol.substring(1,mrkt.symbol.length() - 3));
         js.put("last_price", round(finalCurrency, 2));
@@ -106,17 +114,28 @@ public class ProcesserStats {
         tmp.add(js);
       }
     }   
+    int index = 0;
     for(int i = 0; i < tmp.size(); i++){
-      int index = i;
       for(int j = i+1; j < tmp.size(); j++){
-        if(tmp.get(j) != null && tmp.get(j).getDouble("last_price") < tmp.get(index).getDouble("last_price")){
+        if( tmp.get(j).getDouble("last_price") < tmp.get(index).getDouble("last_price")){
           index = j;
         }
-          JSONObject lowerPrice = tmp.get(index);
-          tmp.set(index, tmp.get(i));
-          tmp.set(i, lowerPrice);
       }
+      JSONObject lowerPrice = tmp.get(index);
+      tmp.set(index, tmp.get(i));
+      tmp.set(i, lowerPrice);
     }
+    for(int i = 0; i < tmp.size(); i++){
+      for(int j = i+1; j < tmp.size(); j++){
+        if( tmp.get(j).getDouble("last_price") < tmp.get(index).getDouble("last_price")){
+          index = j;
+        }
+      }
+      JSONObject lowerPrice = tmp.get(index);
+      tmp.set(index, tmp.get(i));
+      tmp.set(i, lowerPrice);
+    }
+
     for(JSONObject jo : tmp){
       ja.put(jo);
     }
@@ -141,6 +160,7 @@ public class ProcesserStats {
   /**
    * Converts one amount in one currency to another unafortunately via
    * USD. 
+   *
    * @param oneBtCinBeginCUR
    *        How much one BTC cost in the currency specified by the
    *        beginCUR parameter.
@@ -188,9 +208,11 @@ public class ProcesserStats {
 
   // Only for testing! Should be removed any time soon!!!!!!!!!!!!!!
   public static void main(String[] args) throws UnirestException, IOException {
-    ProcesserStats p = new ProcesserStats();
+    ProcesserStats p = new ProcesserStats(false);
     HashMap<String, JSONArray> hm = p.marketMap();
     System.out.println(hm.get("USD").toString(2));
+    System.out.println("============================================================================");
+    System.out.println(hm.get("SEK").toString(2));
     
   }
 }

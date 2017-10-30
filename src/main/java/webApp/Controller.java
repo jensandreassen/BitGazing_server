@@ -31,7 +31,7 @@ public class Controller {
 	public String getMarketPrices(String baseCurrency) throws FileNotFoundException, JSONException, IOException, UnirestException {
 		if (marketPrices == null || marketLastTimeUpdated + MARKET_INTERVAL_MILLIS < System.currentTimeMillis()) {
 			System.out.println("Updating marketPrices!");
-			marketPrices = new ProcesserStats().marketMap();
+			marketPrices = new ProcesserStats(true).marketMap();
 			marketLastTimeUpdated = System.currentTimeMillis();
 		} else if (!marketPrices.containsKey(baseCurrency)) {
 			throw new FileNotFoundException(baseCurrency);	//404 Not Found
