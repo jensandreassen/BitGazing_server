@@ -10,7 +10,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
-
+/**
+ * Acts as Controller and starting-class for the server-application.
+ * @author Jens Andreassen, Kalle Paradis
+ *
+ */
 public class Controller {
 
 	private Map<String, JSONArray> marketPrices;
@@ -40,7 +44,7 @@ public class Controller {
 	}
 
 	/**
-	 * Returnerar total BTC-handelsvolym per valuta sammantaget från flera marknader.
+	 * Returns total BTC-volume per currency, collected from multiple markets
 	 * @return A JSONObject.
 	 */
 	public String getBTCVolumeByCurrency() throws JSONException, IOException, UnirestException {
