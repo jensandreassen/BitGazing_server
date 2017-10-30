@@ -50,7 +50,7 @@ public class Controller {
 	public String getBTCVolumeByCurrency() throws JSONException, IOException, UnirestException {
 		if (volumeByCurrency == null || volumeLastTimeUpdated + VOLUME_INTERVAL_MILLIS < System.currentTimeMillis()) {
 			System.out.println("Updating volumes!");
-			volumeByCurrency = ProcessorVolume.getBTCVolumeByCurrency();
+			volumeByCurrency = ProcessorVolume.getBTCVolumeByCurrency(true);
 			volumeLastTimeUpdated = System.currentTimeMillis();
 		}
 		return volumeByCurrency.toString(2);

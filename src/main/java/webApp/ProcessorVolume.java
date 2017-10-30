@@ -45,10 +45,14 @@ public final class ProcessorVolume {
 	 * Metoden returnerar total BTC-handelsvolym per valuta sammantaget från flera markets.
 	 * @return Ett JSONObject.
 	 */
-	public static JSONObject getBTCVolumeByCurrency() throws JSONException, IOException, UnirestException {
+	public static JSONObject getBTCVolumeByCurrency(boolean liveData) throws JSONException, IOException, UnirestException {
+		JSONArray markets = null;
 		//Fetch data from API or text-file
-//		JSONArray markets = DataFetcher.fetchAllBTCMarkets();
-		JSONArray markets = new JSONArray(readDataFromFile("files/MarketData.txt"));
+		if(liveData) {
+			markets = DataFetcher.fetchAllBTCMarkets();
+		} else {
+			markets = new JSONArray(readDataFromFile("files/MarketData.txt"));
+		}
 		
 		//Read and extract relevant market data.
 		Map<String, Double> volumeByCurrencyMap = new TreeMap<>();
@@ -77,6 +81,6 @@ public final class ProcessorVolume {
 	
 	public static void main(String[] args) throws Exception {
 		//Kör för att få exempel på utdata.
-		System.out.println(ProcessorVolume.getBTCVolumeByCurrency().toString(2));
+		System.out.println(ProcessorVolume.getBTCVolumeByCurrency(false).toString(2));
 	}
 }
