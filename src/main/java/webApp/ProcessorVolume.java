@@ -15,18 +15,17 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 
 /**
- * Klassen hämtar data från extent API och bearbetar den.
+ * Calculates the sum of bitcoin trading volume
+ * from several markets grouped by currency.
+ * @author Kalle Paradis
  */
 public final class ProcessorVolume {
 
-	//Förhindrar instansiering av klassen.
+	//Prevent instantiation of this class since all methods are static.
 	private ProcessorVolume() {}
 	
 	/**
-	 * Läs in data från en text-fil.
-	 * @param fileName
-	 * @return
-	 * @throws IOException 
+	 * Read input data from file. This method is meant for testing.
 	 */
 	private static String readDataFromFile(String fileName) throws IOException {
 		BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
@@ -42,8 +41,9 @@ public final class ProcessorVolume {
 	}
 
 	/**
-	 * Metoden returnerar total BTC-handelsvolym per valuta sammantaget från flera markets.
-	 * @return Ett JSONObject.
+	 * * Calculates and returns the sum of bitcoin volume traded on several markets grouped by currency.
+	 * @param liveData If true, get data from external API. Else read from file(for testing).
+	 * @return A JSONObject containing the result.
 	 */
 	public static JSONObject getBTCVolumeByCurrency(boolean liveData) throws JSONException, IOException, UnirestException {
 		JSONArray markets = null;
@@ -80,7 +80,7 @@ public final class ProcessorVolume {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		//Kör för att få exempel på utdata.
+		//For testing, prints an example of the output data.
 		System.out.println(ProcessorVolume.getBTCVolumeByCurrency(false).toString(2));
 	}
 }

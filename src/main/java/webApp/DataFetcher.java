@@ -11,17 +11,19 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
+/**
+ * This class contains methods for fetching data from three different APIs.
+ * @author Kalle Paradis
+ */
 public class DataFetcher {
 	
-	//Förhindra instansiering
+	//Prevent instantiation of this class since all methods are static.
 	private DataFetcher() {}
 	
 	/**
-	 * Hämtar marknads-data om en specifik marknad från bitcoinaverage.com
-	 * @param market
-	 * @return
-	 * @throws UnirestException
-	 * @throws IOException
+	 * Fetches data about a specific market using bitcoinaverage.com API.
+	 * @param market The market to fetch data about.
+	 * @return A JSONObject containing the result.
 	 */
 	public static JSONObject fetchBTCMarket(String market) throws UnirestException, IOException {
 		HttpResponse<JsonNode> response = Unirest.get("https://apiv2.bitcoinaverage.com/exchanges/ticker/" + market)
@@ -32,11 +34,8 @@ public class DataFetcher {
 	}
 	
 	/**
-	 * Hämtar all marknads-data från bitcoincharts.com
-	 * Anropa inte mer än 1 gång per 15min!
-	 * @return
-	 * @throws UnirestException
-	 * @throws IOException
+	 * Fetches data about all markets using bitcoincharts.com API.
+	 * @return A JSONArray containing the result.
 	 */
 	public static JSONArray fetchAllBTCMarkets() throws UnirestException, IOException {
 		HttpResponse<JsonNode> response = Unirest.get("http://api.bitcoincharts.com/v1/markets.json")
@@ -47,10 +46,8 @@ public class DataFetcher {
 	}
 	
 	/**
-	 * Hämtar valuta-kurser från openexchangerates.org
-	 * @return
-	 * @throws UnirestException
-	 * @throws IOException
+	 * Fetches currency exchange rates from openexchangerates.org API where USD is the base currency. 
+	 * @return A JSONObject containing the result.
 	 */
 	public static JSONObject fetchCurrencyRates() throws UnirestException, IOException {
 		String apiKey = "19c47c8596ba43bd9c7cf51a37928bc3";
@@ -65,7 +62,7 @@ public class DataFetcher {
 	}
 	
 	public static void main(String[] args) throws JSONException, UnirestException, IOException {
-		//Hämta data och skriv ut i console.
+		//Fetch data and print result in console(for tesing).
 //		System.out.println(fetchAllBTCMarkets().toString(2));
 //		System.out.println(fetchBTCMarket("kraken").toString(2));
 		System.out.println(fetchCurrencyRates().toString(2));
